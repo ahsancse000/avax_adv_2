@@ -27,13 +27,16 @@ If you are interested in the intersection of exchanges and blockchains, it is
 definitely worth a read (the logic for filling orders is < 100 lines of code!).
 
 ## Status
+
 `tokenvm` is considered **ALPHA** software and is not safe to use in
 production. The framework is under active development and may change
 significantly over the coming months as its modules are optimized and
 audited.
 
 ## Features
+
 ### Arbitrary Token Minting
+
 The basis of the `tokenvm` is the ability to create, mint, and transfer user-generated
 tokens with ease. When creating an asset, the owner is given "admin control" of
 the asset functions and can later mint more of an asset, update its metadata
@@ -49,6 +52,7 @@ as it is re-added upstream by the `hypersdk` (no action required in the
 `tokenvm`).
 
 ### Trade Any 2 Tokens
+
 What good are custom assets if you can't do anything with them? To showcase the
 raw power of the `hypersdk`, the `tokenvm` also provides support for fully
 on-chain trading. Anyone can create an "offer" with a rate/token they are
@@ -68,6 +72,7 @@ effect as soon as it is re-added upstream by the `hypersdk` (no action required
 in the `tokenvm`).
 
 #### In-Memory Order Book
+
 To make it easier for clients to interact with the `tokenvm`, it comes bundled
 with an in-memory order book that will listen for orders submitted on-chain for
 any specified list of pairs (or all if you prefer). Behind the scenes, this
@@ -78,6 +83,7 @@ a simple max heap per pair where we arrange best on the best "rate" for a given
 asset (in/out).
 
 #### Sandwich-Resistant
+
 Because any fill must explicitly specify an order (it is up the client/CLI to
 implement a trading agent to perform a trade that may span multiple orders) to
 interact with, it is not possible for a bot to jump ahead of a transaction to
@@ -92,6 +98,7 @@ part of what makes its trading support so interesting/useful in a world where
 producers are willing to manipulate transactions for their gain.
 
 #### Partial Fills and Fill Refunds
+
 Anyone filling an order does not need to fill an entire order. Likewise, if you
 attempt to "overfill" an order the `tokenvm` will refund you any extra input
 that you did not use. This is CRITICAL to get right in a blockchain-context
@@ -100,12 +107,14 @@ any remaining tokens...it would not be acceptable for all the assets you
 pledged for the fill that weren't used to disappear.
 
 #### Expiring Fills
+
 Because of the format of `hypersdk` transactions, you can scope your fills to
 be valid only until a particular time. This enables you to go for orders as you
 see fit at the time and not have to worry about your fill sitting around until you
 explicitly cancel it/replace it.
 
 ### Avalanche Warp Support
+
 We take advantage of the Avalanche Warp Messaging (AWM) support provided by the
 `hypersdk` to enable any `tokenvm` to send assets to any other `tokenvm` without
 relying on a trusted relayer or bridge (just the validators of the `tokenvm`
@@ -141,12 +150,14 @@ You can see how this works by checking out the [E2E test suite](./tests/e2e/e2e_
 runs through these flows.
 
 ## Demos
+
 Someone: "Seems cool but I need to see it to really get it."
 Me: "Look no further."
 
 The first step to running these demos is to launch your own `tokenvm` Subnet. You
 can do so by running the following command from this location (may take a few
 minutes):
+
 ```bash
 ./scripts/run.sh;
 ```
@@ -163,6 +174,7 @@ _If you don't need 2 Subnets for your testing, you can run `MODE="run-single"
 To make it easy to interact with the `tokenvm`, we implemented the `token-cli`.
 Next, you'll need to build this. You can use the following command from this location
 to do so:
+
 ```bash
 ./scripts/build.sh
 ```
@@ -171,6 +183,7 @@ _This command will put the compiled CLI in `./build/token-cli`._
 
 Lastly, you'll need to add the chains you created and the default key to the
 `token-cli`. You can use the following commands from this location to do so:
+
 ```bash
 ./build/token-cli key import demo.pk
 ./build/token-cli chain import-anr
@@ -181,14 +194,18 @@ the background and pulls the URIs of all nodes tracking each chain you
 created._
 
 ### Mint and Trade
+
 #### Step 1: Create Your Asset
+
 First up, let's create our own asset. You can do so by running the following
 command from this location:
+
 ```bash
 ./build/token-cli action create-asset
 ```
 
 When you are done, the output should look something like this:
+
 ```
 database: .token-cli
 address: token1rvzhmceq997zntgvravfagsks6w0ryud3rylh4cdvayry0dl97nsjzf3yp
@@ -204,14 +221,17 @@ The "loaded address" here is the address of the default private key (`demo.pk`).
 use this key to authenticate all interactions with the `tokenvm`.
 
 #### Step 2: Mint Your Asset
+
 After we've created our own asset, we can now mint some of it. You can do so by
 running the following command from this location:
+
 ```bash
 ./build/token-cli action mint-asset
 ```
 
 When you are done, the output should look something like this (usually easiest
 just to mint to yourself).
+
 ```
 database: .token-cli
 address: token1rvzhmceq997zntgvravfagsks6w0ryud3rylh4cdvayry0dl97nsjzf3yp
@@ -225,13 +245,16 @@ continue (y/n): y
 ```
 
 #### Step 3: View Your Balance
+
 Now, let's check that the mint worked right by checking our balance. You can do
 so by running the following command from this location:
+
 ```bash
 ./build/token-cli key balance
 ```
 
 When you are done, the output should look something like this:
+
 ```
 database: .token-cli
 address: token1rvzhmceq997zntgvravfagsks6w0ryud3rylh4cdvayry0dl97nsjzf3yp
@@ -242,14 +265,17 @@ balance: 10000 27grFs9vE2YP9kwLM5hQJGLDvqEY9ii71zzdoRHNGC4Appavug
 ```
 
 #### Step 4: Create an Order
+
 So, we have some of our token (`MarioCoin`)...now what? Let's put an order
 on-chain that will allow someone to trade the native token (`TKN`) for some.
 You can do so by running the following command from this location:
+
 ```bash
 ./build/token-cli action create-order
 ```
 
 When you are done, the output should look something like this:
+
 ```
 database: .token-cli
 address: token1rvzhmceq997zntgvravfagsks6w0ryud3rylh4cdvayry0dl97nsjzf3yp
@@ -273,13 +299,16 @@ The "in tick" is how much of the "in assetID" that someone must trade to get
 computing decimal rates on-chain).
 
 #### Step 5: Fill Part of the Order
+
 Now that we have an order on-chain, let's fill it! You can do so by running the
 following command from this location:
+
 ```bash
 ./build/token-cli action fill-order
 ```
 
 When you are done, the output should look something like this:
+
 ```
 database: .token-cli
 address: token1rvzhmceq997zntgvravfagsks6w0ryud3rylh4cdvayry0dl97nsjzf3yp
@@ -301,14 +330,17 @@ Note how all available orders for this pair are listed by the CLI (these come
 from the in-memory order book maintained by the `tokenvm`).
 
 #### Step 6: Close Order
+
 Let's say we now changed our mind and no longer want to allow others to fill
 our order. You can cancel it by running the following command from this
 location:
+
 ```bash
 ./build/token-cli action close-order
 ```
 
 When you are done, the output should look something like this:
+
 ```
 database: .token-cli
 address: token1rvzhmceq997zntgvravfagsks6w0ryud3rylh4cdvayry0dl97nsjzf3yp
@@ -323,16 +355,19 @@ Any funds that were locked up in the order will be returned to the creator's
 account.
 
 #### Bonus: Watch Activity in Real-Time
+
 To provide a better sense of what is actually happening on-chain, the
 `index-cli` comes bundled with a simple explorer that logs all blocks/txs that
 occur on-chain. You can run this utility by running the following command from
 this location:
+
 ```bash
 ./build/token-cli chain watch
 ```
 
 If you run it correctly, you'll see the following input (will run until the
 network shuts down or you exit):
+
 ```
 database: .token-cli
 available chains: 2 excluded: []
@@ -349,14 +384,17 @@ height:15 txs:1 units:464 root:u2FyTtup4gwPfEFybMNTgL2svvSnajfGH4QKqiJ9vpZBSvx7q
 ```
 
 ### Transfer Assets to Another Subnet
+
 Unlike the mint and trade demo, the AWM demo only requires running a single
 command. You can kick off a transfer between the 2 Subnets you created by
 running the following command from this location:
+
 ```bash
 ./build/token-cli action export
 ```
 
 When you are done, the output should look something like this:
+
 ```
 database: .token-cli
 address: token1rvzhmceq997zntgvravfagsks6w0ryud3rylh4cdvayry0dl97nsjzf3yp
@@ -382,6 +420,7 @@ destination. If you wish to import the AWM message using a separate account,
 you can run the `import` command after changing your key._
 
 ### Running a Load Test
+
 _Before running this demo, make sure to stop the network you started using
 `killall avalanche-network-runner`._
 
@@ -398,6 +437,7 @@ of the `hypersdk` and the storage engine used (in this case MerkleDB on top of
 Pebble)._
 
 #### Measuring Disk Speed
+
 This test is extremely sensitive to disk performance. When reporting any TPS
 results, please include the output of:
 
@@ -410,32 +450,39 @@ SSD if you run it too often. We run this in CI to standardize the result of all
 load tests._
 
 ## Zipkin Tracing
+
 To trace the performance of `tokenvm` during load testing, we use `OpenTelemetry + Zipkin`.
 
 To get started, startup the `Zipkin` backend and `ElasticSearch` database (inside `hypersdk/trace`):
+
 ```bash
 docker-compose -f trace/zipkin.yml up
 ```
+
 Once `Zipkin` is running, you can visit it at `http://localhost:9411`.
 
 Next, startup the load tester (it will automatically send traces to `Zipkin`):
+
 ```bash
 TRACE=true ./scripts/tests.load.sh
 ```
 
 When you are done, you can tear everything down by running the following
 command:
+
 ```bash
 docker-compose -f trace/zipkin.yml down
 ```
 
 ## Deploying to a Devnet
+
 _In the world of Avalanche, we refer to short-lived, test Subnets as Devnets._
 
 To programaticaly deploy `tokenvm` to a distributed cluster of nodes running on
 your own custom network or on Fuji, check out this [doc](DEVNETS.md).
 
 ## Future Work
+
 _If you want to take the lead on any of these items, please
 [start a discussion](https://github.com/ava-labs/hypersdk/discussions) or reach
 out on the Avalanche Discord._
